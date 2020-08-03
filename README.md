@@ -8,9 +8,9 @@ run main.py with either the IMDB's ID (numerical) of the desired series or the n
 ```shell
 $ python ./main.py -i "Dr House" -o drhouse.png
 ```
-![drhouse.png](https://imgur.com/mXEcnDD)
+![drhouse.png](https://imgur.com/hKlSu5e.png)
 
 ```shell
-$ python ./main.py -i 0804503 -o madmen.png --dpi 100
+$ python ./main.py -i 0804503 -o madmen.png --dpi 80
 ```
-![madmen.png](https://imgur.com/2G4SB3r)
+![madmen.png](https://i.imgur.com/94kvpo4.png)
