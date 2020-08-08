@@ -13,7 +13,7 @@ import argparse
 
 from imdb import IMDb
 
-def IMDB_series_plotter(input_series, output, dpi=150):
+def IMDB_series_plotter(input_series, output, cmap, dpi=150):
     # create an instance of the IMDb class
     ia = IMDb()
     
@@ -105,12 +105,15 @@ def IMDB_series_plotter(input_series, output, dpi=150):
     mask[:,0] = True
     mask[0,:] = True
     
+    #User defined colormap or default to RdYlGn
+    if not cmap: cmap = 'RdYlGn'
+        
     sns.heatmap(np_rating,
                 mask = mask,
                 square = True,
                 linewidths = 10,
                 cbar=False,
-                cmap = 'RdYlGn',
+                cmap = cmap,
                 vmin = 6.8,
                 vmax = 9.2,
                 annot = True,
@@ -140,6 +143,7 @@ if __name__ == '__main__':
         '-i', '--input', type=str, help='An IMDB ID for a series or the name of a series')
     parser.add_argument(
         '-o', '--output', type=str, help='The output path for the plot, can be relative or absolute')
-
+    parser.add_argument(
+        '-c', '--cmap', type=str, help='(Optional) The Matplotlib colormap to use')
     args = parser.parse_args()
-    IMDB_series_plotter(args.input, args.output)
+    IMDB_series_plotter(args.input, args.output, args.cmap)
