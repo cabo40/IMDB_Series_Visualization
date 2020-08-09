@@ -10,11 +10,15 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 import argparse
+import logging
+import sys
 
 from imdb import IMDb
 
-def IMDB_series_plotter(input_series, output, cmap, dpi=150):
+def IMDB_series_plotter(input_series, output, cmap, dpi):
     # create an instance of the IMDb class
+    logger = logging.getLogger('imdbpy');
+    logger.disabled = True
     ia = IMDb()
     
     #Search for the series or IMDB_ID
@@ -27,9 +31,11 @@ def IMDB_series_plotter(input_series, output, cmap, dpi=150):
     
     try:
         ia.update(series, 'episodes')
+        series['episodes']
     except:
-        print("The input argument was not found to be a series")
-        raise Exception('NotASeries')
+        print("ERROR: The input argument was not found to be a series, please use a more specific string or the UID")
+        sys.exit(1)
+        # raise Exception('NotASeries')
         
     rating = []
     votes = []
@@ -80,7 +86,7 @@ def IMDB_series_plotter(input_series, output, cmap, dpi=150):
     np_votes[0,0] = np.nan
     
     #Start plot process 
-    f, ax = plt.subplots(figsize=(np_rating.shape[1], np_rating.shape[0]))
+    f, ax = plt.subplots(figsize=(max(np_rating.shape[1],6), max(np_rating.shape[0],6)))
     
     #We will mask the slots where there's no chapter or no rating
     mask = np.zeros_like(np_rating, dtype=np.bool)
@@ -105,9 +111,7 @@ def IMDB_series_plotter(input_series, output, cmap, dpi=150):
     mask[:,0] = True
     mask[0,:] = True
     
-    #User defined colormap or default to RdYlGn
-    if not cmap: cmap = 'RdYlGn'
-        
+    #User defined colormap or default
     sns.heatmap(np_rating,
                 mask = mask,
                 square = True,
@@ -140,10 +144,13 @@ def IMDB_series_plotter(input_series, output, cmap, dpi=150):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '-i', '--input', type=str, help='An IMDB ID for a series or the name of a series')
+        '-i', '--input', type=str, required=True, help='An IMDB ID for a series or the name of a series')
     parser.add_argument(
-        '-o', '--output', type=str, help='The output path for the plot, can be relative or absolute')
+        '-o', '--output', type=str, required=True, help='The output path for the plot, can be relative or absolute')
     parser.add_argument(
-        '-c', '--cmap', type=str, help='(Optional) The Matplotlib colormap to use')
+        '-c', '--cmap', type=str, default='RdYlGn', help='(Optional) The Matplotlib colormap to use')
+    parser.add_argument(
+        '--dpi', type=int, default=80, help='(Optional) The dpi of the output png')
+
     args = parser.parse_args()
-    IMDB_series_plotter(args.input, args.output, args.cmap)
+    IMDB_series_plotter(args.input, args.output, args.cmap, args.dpi)
